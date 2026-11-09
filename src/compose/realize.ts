@@ -327,10 +327,15 @@ export function realizeSpec(spec: CompositionSpec, title: string): Project {
   });
   p = buildBeds(p);
   // explicit parts (e.g. written by Claude) override generated notes
-  for (const part of spec.parts) {
-    const t = p.tracks.find((x) => x.name === part.track);
-    const s = p.sections.find((x) => x.name === part.section);
-    if (!t || !s) continue;
+  // match parts by exact section name first; a part addressed by section *kind* fills every section of that kind without its own part
+  const named = new Set(spec.parts.filter((x) => p.sections.some((s) => s.name === x.section)).map((x) => `${x.track}|${x.section}`));
+  const expanded = spec.parts.flatMap((part) => {
+    if (p.sections.some((s) => s.name === part.section)) return [{ part, s: p.sections.find((s) => s.name === part.section)! }];
+    return p.sections.filter((s) => s.kind === part.section.toLowerCase() && !named.has(`${part.track}|${s.name}`)).map((s) => ({ part, s }));
+  });
+  for (const { part, s } of expanded) {
+    const t = p.tracks.find((x) => x.name === part.track) ?? p.tracks.find((x) => x.name.toLowerCase() === part.track.toLowerCase());
+    if (!t) continue;
     const notes = part.notes.map((n) => {
       const pitch = typeof n.pitch === 'number' ? n.pitch : parseNoteName(n.pitch) ?? 60;
       return newNote(pitch, n.start, n.duration, n.velocity, n.lyric);
