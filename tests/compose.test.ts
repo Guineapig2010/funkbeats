@@ -23,6 +23,12 @@ describe('prompt parsing', () => {
     expect(b.key).toEqual({ tonic: 5, mode: 'minor' });
     expect(b.durationSec).toBe(90);
   });
+  it('does not read mood words inside other words ("funk" is not "fun")', () => {
+    const b = parsePrompt('dark brazilian trap funk with stops before the drop');
+    expect(b.genre).toBe('brfunk');
+    expect(b.mood).toBe('dark');
+    expect(parsePrompt('a fun summer song').mood).toBe('happy');
+  });
   it('detects vocals and rain', () => {
     const b = parsePrompt('Intense rock anthem with electric guitars, emotional male vocals, and an explosive chorus.');
     expect(b.genre).toBe('rock');

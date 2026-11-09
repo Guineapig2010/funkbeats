@@ -57,7 +57,7 @@ const MOOD_WORDS: [RegExp, string][] = [
   [/heroic|triumphant|victor|brave|hero/i, 'heroic'],
   [/epic|massive|huge|grand|colossal/i, 'epic'],
   [/sad|melanchol|grief|lonely|tragic|sorrow|tears/i, 'sad'],
-  [/happy|joyful|cheerful|fun|playful|bright/i, 'happy'],
+  [/happy|joyful|cheerful|\bfun\b|playful|bright/i, 'happy'],
   [/dark|sinister|evil|horror|menacing|ominous/i, 'dark'],
   [/intense|aggressive|furious|angry|powerful|explosive|driving/i, 'intense'],
   [/peaceful|calm|serene|relax|gentle|soothing|tranquil|soft/i, 'peaceful'],
