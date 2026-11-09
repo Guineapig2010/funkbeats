@@ -36,6 +36,7 @@ const GENRE_WORDS: [RegExp, string][] = [
   [/lo-?fi|chillhop|study beats/i, 'lofi'],
   [/synth ?wave|retrowave|outrun|80s/i, 'synthwave'],
   [/drum (and|&|n) bass|dnb|jungle/i, 'dnb'],
+  [/trap ?funk|funk (brasileiro|mandel|bh|150|automotivo)|mandel[aã]o|brazilian trap/i, 'brfunk'],
   [/plugg|pluggnb|baile|funk carioca|brazilian funk|tamborz/i, 'pluggnb'],
   [/trap/i, 'trap'],
   [/hip-?hop|rap|boom ?bap/i, 'hiphop'],

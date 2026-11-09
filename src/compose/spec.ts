@@ -9,8 +9,8 @@ import { ModeSchema, SectionKindSchema, TrackRoleSchema } from '../model/schema'
 import { PRESET_MAP } from '../model/presets';
 
 const CompStyleSchema = z.enum(['pad', 'block', 'arp', 'strum', 'stabs', 'ostinato', 'broken', 'jazz-comp', 'power', 'offbeat']);
-export const DrumStyleSchema = z.enum(['none', 'four-floor', 'backbeat', 'rock', 'metal', 'trap', 'boom-bap', 'lofi', 'halftime', 'dnb', 'orchestral', 'jazz', 'country', 'funk', 'synthwave', 'ambient-perc', 'reggaeton', 'ballad', 'baile']);
-export const BassStyleSchema = z.enum(['root-eighths', 'octave-pump', 'walking', '808', 'sustain', 'syncopated', 'root-fifth', 'arp-bass', 'gallop', 'reese', 'baile-808']);
+export const DrumStyleSchema = z.enum(['none', 'four-floor', 'backbeat', 'rock', 'metal', 'trap', 'boom-bap', 'lofi', 'halftime', 'dnb', 'orchestral', 'jazz', 'country', 'funk', 'synthwave', 'ambient-perc', 'reggaeton', 'ballad', 'baile', 'funkbr']);
+export const BassStyleSchema = z.enum(['root-eighths', 'octave-pump', 'walking', '808', 'sustain', 'syncopated', 'root-fifth', 'arp-bass', 'gallop', 'reese', 'baile-808', 'funk-808']);
 
 export const SpecNoteSchema = z.object({
   pitch: z.union([z.number().int().min(0).max(127), z.string().min(2).max(4)]),

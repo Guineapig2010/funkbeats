@@ -49,7 +49,7 @@ Then open http://localhost:8787.
 | `npm run verify` | Type-check, test, then build |
 | `npm run package` | Create `release/aims-studio-<version>.zip` (source only, no `node_modules`) |
 
-Example of authoring a song as a composition spec (the format Claude returns): `npx tsx scripts/examples/neblina-no-baile.ts <outDir>` writes an original slowed pluggnb/baile track as WAV plus a project file you can import.
+Example of authoring a song as a composition spec (the format Claude returns): `npx tsx scripts/examples/neblina-no-baile.ts <outDir>` writes an original slowed pluggnb/baile track as WAV plus a project file you can import; `scripts/examples/noite-virada.ts` does the same for a hard Brazilian trap-funk track with stop → drop sections and a loud master.
 
 Dev tools: `npx tsx scripts/calibrate-presets.ts [preset-id ...]` re-measures every preset's loudness and rewrites `src/model/presetTrim.ts`. `npx tsx scripts/calibrate-mix.ts "prompt"` prints per-track levels of a generated song.
 
@@ -262,7 +262,7 @@ The result is imported as a normal audio clip.
 
 | Area | Status | Notes |
 |---|---|---|
-| Local AI composer (prompt → full arrangement) | ✅ | 19 genre styles (incl. slowed pluggnb / baile funk), 14 moods, durations, key, tempo, structure, instrumentation, complexity, energy, creativity, seeds |
+| Local AI composer (prompt → full arrangement) | ✅ | 20 genre styles (incl. slowed pluggnb / baile funk and Brazilian trap-funk), 14 moods, durations, key, tempo, structure, instrumentation, complexity, energy, creativity, seeds |
 | Claude composition and assistant | ◐ | Implemented with server validation and repair; not run against the live API here (no key) |
 | AI action buttons (regenerate, extend, remix, genre, add/remove instruments, improve melody/chords/rhythm, variation, cinematic, energy, soften, new intro/ending, harmonies, humanize) | ✅ | Region-aware and undoable |
 | Region instructions ("make these 8 bars more dramatic…") | ✅ | Claude handles free text; the offline assistant covers common phrasings |

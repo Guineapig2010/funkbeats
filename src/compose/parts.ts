@@ -310,6 +310,17 @@ export function composeBass(c: PartContext, style: BassStyle, center = 38): PNot
           });
           break;
         }
+        case 'funk-808': {
+          // punchy 808 on the funk kick grid (1, 2, 3, "&" 3, 4); octave pops on "&" of 3
+          const hits = low ? [0, 2] : [0, 1, 2, 2.5, 3];
+          const list = hits.map((h) => s + h).filter((t) => t < e - 1e-6);
+          list.forEach((t, i) => {
+            const end = i < list.length - 1 ? list[i + 1] : e;
+            const p = hits[i] === 2.5 && r.chance(0.5) ? root + 12 : i === list.length - 1 && nextRoot !== root && r.chance(0.4) ? nextRoot : root;
+            push(p, t, Math.min(end - t, 0.9) * 0.95, i === 0 ? v : v * 0.9);
+          });
+          break;
+        }
         case 'baile-808': {
           // 808 locked to the baile kick: 1, 2, 3 and the "a" of 4, sliding into the next chord
           const list = (low ? [0, 2] : [0, 1, 2, 3.5]).map((h) => s + h).filter((t) => t < e - 1e-6);
@@ -574,6 +585,16 @@ function barPattern(style: DrumStyle, energy: number, stepsPerBar: number, r: Rn
       setSteps(g, S, [4, 12], 1, N);
       setSteps(g, high ? CR : CH, all(high ? 4 : 2), high ? 0.55 : 0.6, N);
       break;
+    case 'funkbr': {
+      // Brazilian trap-funk: kick on 1, 2, 3, "&" of 3, 4; snaps/claps on 1, 2, "a" of 2, "&" of 3
+      setSteps(g, K, variation ? [0, 2, 4, 8, 10, 12, 14] : [0, 4, 8, 10, 12], 1, N);
+      setSteps(g, SNAP, [4, 7, 10], 0.9, N);
+      setSteps(g, CL, [4, 10], 0.85, N);
+      setSteps(g, RIM, [13], 0.5, N);
+      setSteps(g, CH, all(2), low ? 0.3 : 0.5, N);
+      if (high) { setSteps(g, CH, [3, 9, 15], 0.4, N); setSteps(g, OH, [14], 0.45, N); setSteps(g, TAMB, [7, 15], 0.35, N); }
+      break;
+    }
     case 'baile': {
       // tamborzão-style: kick on 1, 2, 3 and the "a" of 4; claps/snaps on the "&" of 1, 3, "a" of 3, "&" of 4
       setSteps(g, K, variation ? [0, 4, 8, 11, 14] : [0, 4, 8, 14], 1, N);
@@ -708,7 +729,7 @@ export function composeDrums(c: PartContext, style: DrumStyle, opts: { humanize:
       });
     }
     // trap ratchets: hi-hat 32nd / triplet rolls
-    if ((style === 'trap' || style === 'baile') && c.energy > 0.55 && r.chance(style === 'baile' ? 0.35 : 0.6)) {
+    if ((style === 'trap' || style === 'baile' || style === 'funkbr') && c.energy > 0.55 && r.chance(style === 'baile' ? 0.35 : 0.6)) {
       const at = b0 + r.pick([1.5, 3, 3.5, 2.5]);
       const trip = r.chance(0.5);
       const n = trip ? 3 : 4;
@@ -724,7 +745,7 @@ export function composeDrums(c: PartContext, style: DrumStyle, opts: { humanize:
       if (style === 'orchestral') {
         for (let t = 0; t < fillBeats - 1e-6; t += 0.25) add(t < fillBeats / 2 ? TL : TAIKO, fs + t, 0.6 + 0.35 * (t / fillBeats));
         if (nextIsBig) add(SWELL, b0, 0.7, c.bpb);
-      } else if (['four-floor', 'trap', 'halftime', 'baile'].includes(style)) {
+      } else if (['four-floor', 'trap', 'halftime', 'baile', 'funkbr'].includes(style)) {
         for (let t = 0; t < fillBeats - 1e-6; t += 0.25) add(style === 'four-floor' ? CL : S, fs + t, 0.5 + 0.45 * (t / fillBeats));
       } else {
         const toms = [TH, TH, TM, TM, TL, TL, K, TL];

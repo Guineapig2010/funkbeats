@@ -38,7 +38,7 @@ describe('local composer', () => {
     'Create an energetic electronic dance track with powerful bass, detailed percussion, and a catchy melody.',
     'Create an intense rock anthem with electric guitars, emotional male vocals, and an explosive chorus.',
     'Create peaceful piano music with rain ambience and soft strings.',
-    'dark trap beat', 'slowed pluggnb baile funk with dreamy plugg lead', 'smooth jazz', 'lofi hip hop to study', 'synthwave night drive', 'country song', 'ambient soundscape', 'metal', 'funk groove', 'experimental glitch',
+    'dark trap beat', 'slowed pluggnb baile funk with dreamy plugg lead', 'hard brazilian trap funk at 136 bpm', 'smooth jazz', 'lofi hip hop to study', 'synthwave night drive', 'country song', 'ambient soundscape', 'metal', 'funk groove', 'experimental glitch',
   ];
   for (const prompt of cases) {
     it(`produces a valid, coherent arrangement: ${prompt.slice(0, 40)}`, () => {

@@ -83,6 +83,8 @@ function trackEffects(tags: string[], role: TrackRole, drumsTrackId: string | nu
     if (t === 'lofi-keys') fx.push(makeEffect('saturation', { drive: 5, warmth: 0.6 }), makeEffect('chorus', { rate: 0.4, depth: 0.0025, mix: 0.3 }), makeEffect('filter', { mode: 'lowpass', cutoff: 5000, resonance: 0.6 }));
     if (t === 'gated') fx.push(makeEffect('compressor', { threshold: -16, ratio: 4, attack: 0.003, release: 0.08, makeup: 3 }));
     if (t === 'chorus') fx.push(makeEffect('chorus', { rate: 0.6, depth: 0.003, mix: 0.4 }));
+    if (t === '808-hard') fx.push(makeEffect('distortion', { drive: 0.45, tone: 3000, output: -9, curve: 'soft', mix: 0.7 }), makeEffect('eq', { hpf: 30, lowFreq: 55, lowGain: 1, mid1Freq: 180, mid1Gain: 2, mid2Freq: 1200, mid2Gain: 2 }), makeEffect('compressor', { threshold: -16, ratio: 4, attack: 0.005, release: 0.1, makeup: 2 }));
+    if (t === 'lead-bite') fx.push(makeEffect('saturation', { drive: 6, warmth: 0.2, mix: 0.8 }), makeEffect('eq', { hpf: 200, mid2Freq: 2500, mid2Gain: 3, highFreq: 9000, highGain: 2 }), makeEffect('delay', { time: 0.5, feedback: 0.3, mix: 0.15, tone: 4000 }));
     if (t === '808-dirt') fx.push(makeEffect('saturation', { drive: 7, warmth: 0.6, mix: 0.8 }), makeEffect('eq', { hpf: 25, lowFreq: 55, lowGain: 2, mid1Freq: 250, mid1Gain: -3 }));
     if (t === 'plugg-wash') fx.push(makeEffect('chorus', { rate: 0.35, depth: 0.004, mix: 0.35 }), makeEffect('filter', { mode: 'lowpass', cutoff: 5200, resonance: 0.6 }), makeEffect('delay', { time: 0.75, feedback: 0.4, mix: 0.18, tone: 2500 }));
     if (t === 'delay') fx.push(makeEffect('delay', { time: 0.75, feedback: 0.35, mix: 0.2 }));
