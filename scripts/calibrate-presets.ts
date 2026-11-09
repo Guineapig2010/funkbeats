@@ -1,20 +1,22 @@
 /**
  * Dev tool: measures every preset at a reference performance and writes
  * src/model/presetTrim.ts so all presets sit at the same reference loudness.
- * Run: npx tsx scripts/calibrate-presets.ts
+ * Run: npx tsx scripts/calibrate-presets.ts [preset-id ...]  (no ids = all presets)
  */
 import * as wa from 'node-web-audio-api';
 for (const [k, v] of Object.entries(wa)) if (!(k in globalThis)) (globalThis as any)[k] = v;
 import { writeFileSync } from 'node:fs';
 import { newMidiClip, newNote, newProject, newTrack } from '../src/model/factory';
 import { PRESETS } from '../src/model/presets';
+import { PRESET_TRIM } from '../src/model/presetTrim';
 import { renderProject } from '../src/audio/render';
 import { analyze } from '../src/export/analysis';
 
 const TARGET = -20; // dBFS RMS of the reference performance, pre-fader
 (async () => {
-  const out: Record<string, number> = {};
-  for (const pr of PRESETS) {
+  const only = process.argv.slice(2);
+  const out: Record<string, number> = only.length ? { ...PRESET_TRIM } : {};
+  for (const pr of PRESETS.filter((p) => !only.length || only.includes(p.id))) {
     const p = newProject();
     p.master.effects = [];
     p.bpm = 120;

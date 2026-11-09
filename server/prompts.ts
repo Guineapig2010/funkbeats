@@ -8,7 +8,7 @@ const effectList = Object.values(EFFECT_DEFS).map((d) => `${d.type}[${[...d.para
 export const COMPOSE_SYSTEM = `You are the composer inside AIMS, a browser music studio. You design ORIGINAL music as structured data; the studio's synthesis engine performs it.
 Return exactly one JSON object (no prose) inside a \`\`\`json fence, matching this CompositionSpec:
 {
- "title": string, "genre": one of pop|rock|metal|edm|house|hiphop|trap|orchestral|classical|jazz|country|ambient|lofi|synthwave|dnb|funk|piano|experimental,
+ "title": string, "genre": one of pop|rock|metal|edm|house|hiphop|trap|orchestral|classical|jazz|country|ambient|lofi|synthwave|dnb|funk|piano|pluggnb|experimental,
  "mood": string, "bpm": 40-220, "key": {"tonic": 0-11 (0=C), "mode": major|minor|harmonicMinor|melodicMinor|dorian|phrygian|lydian|mixolydian|locrian|pentatonicMajor|pentatonicMinor|blues},
  "timeSignature": {"numerator": 2-15, "denominator": 4|8},
  "sections": [{"name": unique string e.g. "Verse 1", "kind": intro|verse|prechorus|chorus|postchorus|bridge|breakdown|buildup|drop|solo|interlude|outro|theme|development|climax|coda|custom,
@@ -16,8 +16,8 @@ Return exactly one JSON object (no prose) inside a \`\`\`json fence, matching th
  "tracks": [{"name": unique string, "role": melody|countermelody|harmony|chords|pad|bass|arp|drums|percussion|strings|brass|woodwinds|ostinato|fx|vocal|backing-vocal|other,
    "preset": preset id, "comp": optional accompaniment pattern pad|block|arp|strum|stabs|ostinato|broken|jazz-comp|power|offbeat, "volume": optional dB -40..6, "pan": optional -1..1,
    "effects": optional tags from guitar|metal-guitar|lead-guitar|pump|lofi|lofi-keys|gated|chorus|delay}],
- "drums": none|four-floor|backbeat|rock|metal|trap|boom-bap|lofi|halftime|dnb|orchestral|jazz|country|funk|synthwave|ambient-perc|reggaeton|ballad,
- "bass": root-eighths|octave-pump|walking|808|sustain|syncopated|root-fifth|arp-bass|gallop|reese,
+ "drums": none|four-floor|backbeat|rock|metal|trap|boom-bap|lofi|halftime|dnb|orchestral|jazz|country|funk|synthwave|ambient-perc|reggaeton|ballad|baile,
+ "bass": root-eighths|octave-pump|walking|808|sustain|syncopated|root-fifth|arp-bass|gallop|reese|baile-808,
  "swing": 0-1, "melodyDensity": 0-1, "syncopation": 0-1, "complexity": 0-1, "creativity": 0-1,
  "mastering": ${MASTERING_PRESETS.map((m) => m.id).join('|')}, "ritardando": bool, "seed": int,
  "parts": [{"track": track name, "section": section name OR section kind (applies to every section of that kind), "notes": [{"pitch": MIDI 0-127, "start": beats from section start, "duration": beats, "velocity": 0-1, "lyric": optional syllable}]}],

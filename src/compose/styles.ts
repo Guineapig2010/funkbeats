@@ -1,8 +1,8 @@
 /** Genre and mood knowledge used by the local composer. */
 import type { ModeName, SectionKind, TrackRole } from '../model/schema';
 
-export type DrumStyle = 'none' | 'four-floor' | 'backbeat' | 'rock' | 'metal' | 'trap' | 'boom-bap' | 'lofi' | 'halftime' | 'dnb' | 'orchestral' | 'jazz' | 'country' | 'funk' | 'synthwave' | 'ambient-perc' | 'reggaeton' | 'ballad';
-export type BassStyle = 'root-eighths' | 'octave-pump' | 'walking' | '808' | 'sustain' | 'syncopated' | 'root-fifth' | 'arp-bass' | 'gallop' | 'reese';
+export type DrumStyle = 'none' | 'four-floor' | 'backbeat' | 'rock' | 'metal' | 'trap' | 'boom-bap' | 'lofi' | 'halftime' | 'dnb' | 'orchestral' | 'jazz' | 'country' | 'funk' | 'synthwave' | 'ambient-perc' | 'reggaeton' | 'ballad' | 'baile';
+export type BassStyle = 'root-eighths' | 'octave-pump' | 'walking' | '808' | 'sustain' | 'syncopated' | 'root-fifth' | 'arp-bass' | 'gallop' | 'reese' | 'baile-808';
 export type CompStyle = 'pad' | 'block' | 'arp' | 'strum' | 'stabs' | 'ostinato' | 'broken' | 'jazz-comp' | 'power' | 'offbeat';
 
 export interface RoleSpec {
@@ -348,6 +348,25 @@ export const GENRES: Record<string, GenreStyle> = {
     ],
     drums: 'none', bass: 'sustain', melodyDensity: 0.4, syncopation: 0.15, swing: 0, mastering: 'acoustic', reverb: 1, ritardando: true,
   },
+  pluggnb: {
+    // Slowed pluggnb / baile-funk hybrid: dreamy bell + pad melodies over sliding 808s and a tamborzão-style groove.
+    id: 'pluggnb', label: 'Pluggnb / Baile (slowed)', bpm: [98, 108], majorModes: ['major', 'lydian'], minorModes: ['minor', 'dorian'], preferMinor: 0.8, keys: [6, 1, 8, 3, 10],
+    timeSig: [4, 4], chordSize: 5, harmonicRhythm: 1,
+    progMajor: [P('IVmaj7 V iii7 vi7'), P('Imaj7 iii7 IVmaj7 V')],
+    progMinor: [P('iv7 v7 i9 VIImaj7'), P('VImaj7 VII i9 i9'), P('i9 VImaj7 iv7 v7'), P('iv9 VII IIImaj7 VImaj7')],
+    structure: [
+      { kind: 'intro', bars: 4, energy: 0.35 }, { kind: 'verse', bars: 16, energy: 0.8 }, { kind: 'breakdown', bars: 4, energy: 0.35 },
+      { kind: 'chorus', bars: 16, energy: 0.9 }, { kind: 'verse', bars: 8, energy: 0.8, optional: true }, { kind: 'outro', bars: 8, energy: 0.45 },
+    ],
+    roles: [
+      { role: 'drums', name: 'Baile Drums', preset: 'kit-trap', minEnergy: 0.5 },
+      { role: 'bass', name: '808 Slide', preset: '808-bass', minEnergy: 0.5, effects: ['808-dirt'] },
+      { role: 'pad', name: 'Dream Pad', preset: 'dream-pad', comp: 'pad', minEnergy: 0, effects: ['plugg-wash'] },
+      { role: 'melody', name: 'Plugg Lead', preset: 'plugg-lead', minEnergy: 0.3, effects: ['plugg-wash'] },
+      { role: 'arp', name: 'Bell Keys', preset: 'celesta', comp: 'arp', minEnergy: 0.75, effects: ['plugg-wash'] },
+    ],
+    drums: 'baile', bass: 'baile-808', melodyDensity: 0.45, syncopation: 0.55, swing: 0, mastering: 'lofi', reverb: 1.2,
+  },
   experimental: {
     id: 'experimental', label: 'Experimental', bpm: [70, 140], majorModes: ['lydian', 'locrian'], minorModes: ['phrygian', 'locrian', 'harmonicMinor'], preferMinor: 0.6, keys: [1, 6, 11, 4],
     timeSig: [7, 8], chordSize: 4, harmonicRhythm: 1,
@@ -369,7 +388,7 @@ export const GENRES: Record<string, GenreStyle> = {
 GENRES['film score'] = GENRES.orchestral;
 GENRES.cinematic = GENRES.orchestral;
 
-export const GENRE_LIST = ['pop', 'rock', 'hiphop', 'edm', 'orchestral', 'classical', 'jazz', 'country', 'metal', 'ambient', 'lofi', 'synthwave', 'trap', 'house', 'dnb', 'funk', 'piano', 'experimental'];
+export const GENRE_LIST = ['pop', 'rock', 'hiphop', 'edm', 'orchestral', 'classical', 'jazz', 'country', 'metal', 'ambient', 'lofi', 'synthwave', 'trap', 'pluggnb', 'house', 'dnb', 'funk', 'piano', 'experimental'];
 
 export interface MoodProfile { minor: number; tempo: number; energy: number; modes?: ModeName[]; brightness: number; progBias?: string[][] }
 export const MOODS: Record<string, MoodProfile> = {

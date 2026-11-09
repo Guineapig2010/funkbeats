@@ -83,6 +83,8 @@ function trackEffects(tags: string[], role: TrackRole, drumsTrackId: string | nu
     if (t === 'lofi-keys') fx.push(makeEffect('saturation', { drive: 5, warmth: 0.6 }), makeEffect('chorus', { rate: 0.4, depth: 0.0025, mix: 0.3 }), makeEffect('filter', { mode: 'lowpass', cutoff: 5000, resonance: 0.6 }));
     if (t === 'gated') fx.push(makeEffect('compressor', { threshold: -16, ratio: 4, attack: 0.003, release: 0.08, makeup: 3 }));
     if (t === 'chorus') fx.push(makeEffect('chorus', { rate: 0.6, depth: 0.003, mix: 0.4 }));
+    if (t === '808-dirt') fx.push(makeEffect('saturation', { drive: 7, warmth: 0.6, mix: 0.8 }), makeEffect('eq', { hpf: 25, lowFreq: 55, lowGain: 2, mid1Freq: 250, mid1Gain: -3 }));
+    if (t === 'plugg-wash') fx.push(makeEffect('chorus', { rate: 0.35, depth: 0.004, mix: 0.35 }), makeEffect('filter', { mode: 'lowpass', cutoff: 5200, resonance: 0.6 }), makeEffect('delay', { time: 0.75, feedback: 0.4, mix: 0.18, tone: 2500 }));
     if (t === 'delay') fx.push(makeEffect('delay', { time: 0.75, feedback: 0.35, mix: 0.2 }));
   }
   if (role === 'bass' && !fx.length) fx.push(makeEffect('compressor', { threshold: -22, ratio: 4, attack: 0.008, release: 0.12, makeup: 3 }));

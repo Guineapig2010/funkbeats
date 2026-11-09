@@ -53,5 +53,7 @@ export const PRESET_TRIM: Record<string, number> = {
   "kit-acoustic": -8,
   "kit-rock": -8.5,
   "kit-lofi": -7.5,
-  "kit-orchestral": -14.5
+  "kit-orchestral": -14.5,
+  "plugg-lead": 4,
+  "dream-pad": 13
 };
