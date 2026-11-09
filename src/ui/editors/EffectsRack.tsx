@@ -5,10 +5,11 @@ import { Knob, fmtHz } from '../components/widgets';
 
 export type FxHost = { kind: 'track'; id: string } | { kind: 'return'; id: string } | { kind: 'master' };
 
+const NONE: Effect[] = [];
 export function getEffects(p: Project, h: FxHost): Effect[] {
   if (h.kind === 'master') return p.master.effects;
-  if (h.kind === 'return') return p.returns.find((r) => r.id === h.id)?.effects ?? [];
-  return p.tracks.find((t) => t.id === h.id)?.effects ?? [];
+  if (h.kind === 'return') return p.returns.find((r) => r.id === h.id)?.effects ?? NONE;
+  return p.tracks.find((t) => t.id === h.id)?.effects ?? NONE;
 }
 export function setEffects(p: Project, h: FxHost, fx: Effect[]): Project {
   if (h.kind === 'master') return { ...p, master: { ...p.master, effects: fx } };

@@ -285,7 +285,7 @@ export function Timeline() {
       const track = project.tracks.find((t) => t.id === trackId)!;
       const clip = track.clips.find((c) => c.id === clipId)!;
       if (tool === 'erase') { st.commit('Delete clip', (p) => ({ ...p, tracks: p.tracks.map((t) => (t.id === trackId ? { ...t, clips: t.clips.filter((c) => c.id !== clipId) } : t)) })); return; }
-      if (tool === 'split' || e.altKey && !e.shiftKey && target.dataset.handle === undefined && e.detail === 1 && (e.metaKey || false)) { A.splitAt(snap(beat), [clipId]); return; }
+      if (tool === 'split') { A.splitAt(snap(beat), [clipId]); return; }
       const handle = target.dataset.handle as 'l' | 'r' | undefined;
       const sel = e.shiftKey ? (st.selectedClipIds.includes(clipId) ? st.selectedClipIds : [...st.selectedClipIds, clipId]) : st.selectedClipIds.includes(clipId) ? st.selectedClipIds : [clipId];
       set({ selectedClipIds: sel, selectedTrackIds: [trackId], editClipId: track.type === 'audio' ? st.editClipId : clipId });

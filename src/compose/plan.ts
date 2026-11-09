@@ -270,5 +270,5 @@ export function songTitle(brief: Brief, seed: number): string {
   };
   const b = ['Horizon', 'the Storm', 'Valor', 'Tomorrow', 'the Sea', 'Neon Dreams', 'Glass', 'Embers', 'the North', 'Starlight', 'Rain', 'Home', 'Gravity', 'Afterglow', 'the Machine'];
   const first = a[brief.mood] ?? a.neutral;
-  return `${r.pick(first)} ${r.pick(b)}`.replace(/\s+/g, ' ');
+  return `${r.pick(first)} ${r.pick(b)}`.replace(/\bthe the\b/gi, 'the').replace(/&\s+the\b/i, '& The').replace(/\s+/g, ' ');
 }

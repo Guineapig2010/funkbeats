@@ -1,7 +1,7 @@
 /** Compact structured project summary sent to Claude (no audio, bounded size). */
 import { MeterMap } from '../model/tempo';
 import type { Project } from '../model/schema';
-import { NOTE_NAMES } from '../theory/theory';
+import { KEY_NAMES } from '../theory/theory';
 import { trackNotesInRange } from '../model/clipOps';
 
 export function projectContext(p: Project, sel: { from: number; to: number } | null, selectedTrackIds: string[]) {
@@ -10,7 +10,7 @@ export function projectContext(p: Project, sel: { from: number; to: number } | n
   const ctx = {
     name: p.name,
     bpm: p.bpm,
-    key: `${NOTE_NAMES[p.key.tonic]} ${p.key.mode}`,
+    key: `${KEY_NAMES[p.key.tonic]} ${p.key.mode}`,
     timeSignature: `${p.timeSignature.numerator}/${p.timeSignature.denominator}`,
     genre: p.style?.genre ?? p.generation?.genre ?? 'unknown',
     mood: p.style?.mood ?? 'unknown',

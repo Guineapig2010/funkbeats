@@ -89,7 +89,7 @@ export const useStudio = create<StudioState>((set, get) => ({
   bottomTab: 'editor',
   leftTab: 'instruments',
   rightTab: 'generate',
-  panels: { left: 250, right: 360, bottom: 300, leftOpen: true, rightOpen: true, bottomOpen: true },
+  panels: { left: 250, right: 360, bottom: 340, leftOpen: true, rightOpen: true, bottomOpen: true },
   mode: 'studio',
   automationTarget: 'volume',
   playing: false,

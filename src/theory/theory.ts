@@ -293,8 +293,10 @@ export function bassNoteFor(c: ChordSpec, center = 40): number {
   return n;
 }
 
+/** Conventional key names (flats for Db/Eb/Ab/Bb, F# for the tritone). */
+export const KEY_NAMES = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'] as const;
 export function keyLabel(tonic: number, mode: ModeName) {
-  return `${NOTE_NAMES[tonic]} ${MODE_LABELS[mode]}`;
+  return `${KEY_NAMES[tonic]} ${MODE_LABELS[mode]}`;
 }
 
 export function parseKey(s: string): { tonic: number; mode: ModeName } | null {

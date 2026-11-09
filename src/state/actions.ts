@@ -15,6 +15,7 @@ import { midiToProject, midiToTracks, parseMidi, projectToMidi } from '../midi/m
 import { duplicateClip, splitClip } from '../model/clipOps';
 import { newAudioClip, newProject, newTrack, parseProject, serializeProject, TRACK_COLORS } from '../model/factory';
 import { DRUM_PIECES, emptySamplerInstrument, instrumentFromPreset } from '../model/presets';
+import { masteringChain } from '../model/effects';
 import type { Clip, GenerationSettings, Project, SampleZone, Track } from '../model/schema';
 import { MeterMap, TempoMap } from '../model/tempo';
 import { deleteProject, lastProjectId, loadProject } from '../storage/db';
@@ -485,7 +486,7 @@ export async function newEmptyProject(template?: 'empty' | 'beat' | 'band' | 'or
   if (template === 'band') { add('kit-rock', 'Drums', 'drums'); add('pick-bass', 'Bass', 'bass'); add('dist-guitar', 'Guitar', 'chords'); add('synth-piano', 'Piano', 'chords'); add('vocal-guide', 'Vocal guide', 'vocal'); p.tracks.push(newTrack({ type: 'audio', name: 'Vocal Recording', role: 'audio' }, 5)); }
   if (template === 'orchestra') { add('violins', 'Violins', 'melody'); add('string-ensemble', 'Strings', 'strings'); add('cellos', 'Cellos', 'countermelody'); add('orch-basses', 'Basses', 'bass'); add('french-horns', 'Horns', 'brass'); add('kit-orchestral', 'Percussion', 'percussion'); p.bpm = 90; p.master.preset = 'cinematic'; }
   if (template === 'podcast') { p.tracks.push(newTrack({ type: 'audio', name: 'Host', role: 'audio' }, 0), newTrack({ type: 'audio', name: 'Guest', role: 'audio' }, 1), newTrack({ type: 'audio', name: 'Music Bed', role: 'audio' }, 2)); p.master.preset = 'podcast'; }
-  if (p.master.preset !== 'clean') p = { ...p, master: { ...p.master, effects: (await import('../model/effects')).masteringChain(p.master.preset) } };
+  if (p.master.preset !== 'clean') p = { ...p, master: { ...p.master, effects: masteringChain(p.master.preset) } };
   await saveNow();
   S().load(p, 'New project');
   void S().refreshRecent();

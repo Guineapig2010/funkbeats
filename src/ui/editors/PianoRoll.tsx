@@ -47,7 +47,16 @@ export function PianoRoll({ clip, track }: { clip: Clip; track: Track }) {
   const snapB = useCallback((b: number) => (snapOn ? Math.round(b / gridBeats) * gridBeats : b), [snapOn, gridBeats]);
   const key = project.key;
 
-  useEffect(() => { setSel([]); }, [clip.id]);
+  // centre the view on the clip's notes once the editor knows its size
+  const centred = useRef(false);
+  useEffect(() => {
+    if (centred.current || size.h < 100) return;
+    centred.current = true;
+    const ps = clip.notes.map((n) => n.pitch);
+    const visible = Math.floor((size.h - VEL_H) / rowH);
+    const mid = ps.length ? (Math.max(...ps) + Math.min(...ps)) / 2 : 66;
+    setTopPitch(Math.min(127, Math.round(mid + visible / 2)));
+  }, [size.h, clip.notes, rowH]);
   useEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
