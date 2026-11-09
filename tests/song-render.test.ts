@@ -9,7 +9,7 @@ import { writeFileSync } from 'node:fs';
 
 const OUT = process.env.AIMS_RENDER_DIR;
 
-describe('generated songs render to real audio', () => {
+describe.skipIf(!process.env.AIMS_SLOW)('generated songs render to real audio (slow: AIMS_SLOW=1)', () => {
   const prompts: [string, string][] = [
     ['orchestral', 'Create a two-minute heroic orchestral soundtrack with emotional strings, bold brass, cinematic percussion, and a massive final climax.'],
     ['edm', 'Create an energetic electronic dance track with powerful bass, detailed percussion, and a catchy melody.'],

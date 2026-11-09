@@ -38,11 +38,22 @@ export function fitStructure(r: Rng, template: { kind: SectionKind; bars: number
     if (idx === undefined) break;
     secs.splice(idx, 1);
   }
+  // drop back-to-back repeats of the same section kind (keep the later, bigger one)
+  for (let i = 0; i < secs.length - 1 && total() > targetBars * 1.12; ) {
+    if (secs[i].kind === secs[i + 1].kind) secs.splice(i, 1); else i++;
+  }
   // still too long: shrink the longest sections in steps of 4 (keep >= 2 bars intros/outros, >= 4 others)
   let guard = 0;
   while (total() > targetBars * 1.06 && guard++ < 200) {
     const cand = secs.map((s, i) => [i, s.bars] as const).filter(([i, b]) => b > (['intro', 'outro', 'coda', 'interlude'].includes(secs[i].kind) ? 2 : 4));
-    if (!cand.length) { if (secs.length > 2) secs.splice(secs.length - 2, 1); else break; continue; }
+    if (!cand.length) {
+      // remove the least essential section; never the peak (chorus/climax/drop) or the ending
+      const order: SectionKind[] = ['interlude', 'postchorus', 'prechorus', 'bridge', 'solo', 'breakdown', 'development', 'buildup', 'verse', 'theme', 'intro'];
+      const idx = order.map((k) => secs.findIndex((x, i) => x.kind === k && i < secs.length - 1)).find((i) => i >= 0);
+      if (idx === undefined || secs.length <= 2) break;
+      secs.splice(idx, 1);
+      continue;
+    }
     const [i] = cand.reduce((a, b) => (b[1] > a[1] ? b : a));
     secs[i].bars -= secs[i].bars > 8 ? 4 : 2;
   }

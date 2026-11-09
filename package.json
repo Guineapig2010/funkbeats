@@ -15,7 +15,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "node e2e/smoke.mjs",
-    "package": "node scripts/package-zip.mjs"
+    "package": "node scripts/package-zip.mjs",
+    "test:slow": "AIMS_SLOW=1 vitest run tests/song-render.test.ts",
+    "verify": "npm run typecheck && npm test && npm run build"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.6.0",
@@ -38,5 +40,8 @@
     "typescript": "^5.9.3",
     "vite": "^7.3.7",
     "vitest": "^4.1.12"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

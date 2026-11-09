@@ -27,12 +27,41 @@ function ClipEditor() {
   }, [tracks, editId]);
   const [forcePiano, setForcePiano] = useState(false);
   if (!found) return <div className="empty-state">Double-click a MIDI or drum clip in the timeline to edit it here.<br />Use the Draw tool (✎) on a track to create an empty clip.</div>;
-  if (found.c.kind === 'audio') return <div className="empty-state">Audio clips are edited on the timeline (move, trim, split, loop). Fades, gain and playback rate are in the clip context menu → see Mixer/Vocals for processing.</div>;
+  if (found.c.kind === 'audio') return <AudioClipInspector trackId={found.t.id} clipId={found.c.id} />;
   const drums = found.t.instrument.kind === 'drumkit';
   return (
     <div className="editor">
       {drums && <div className="row" style={{ padding: '2px 8px' }}><button className={`btn sm ${!forcePiano ? 'on' : ''}`} onClick={() => setForcePiano(false)}>Step sequencer</button><button className={`btn sm ${forcePiano ? 'on' : ''}`} onClick={() => setForcePiano(true)}>Piano roll</button></div>}
       {drums && !forcePiano ? <DrumEditor key={found.c.id} clip={found.c} track={found.t} /> : <PianoRoll key={found.c.id} clip={found.c} track={found.t} />}
+    </div>
+  );
+}
+
+function AudioClipInspector({ trackId, clipId }: { trackId: string; clipId: string }) {
+  const clip = useStudio((s) => s.project.tracks.find((t) => t.id === trackId)?.clips.find((c) => c.id === clipId));
+  if (!clip?.audio) return null;
+  const a = clip.audio;
+  const st = useStudio.getState;
+  const edit = (patch: Partial<typeof a>, live = true) => {
+    const fn = (p: ReturnType<typeof st>['project']) => ({ ...p, tracks: p.tracks.map((t) => (t.id !== trackId ? t : { ...t, clips: t.clips.map((c) => (c.id === clipId && c.audio ? { ...c, audio: { ...c.audio, ...patch } } : c)) })) });
+    if (live) st().live(fn); else st().commit('Edit audio clip', fn);
+  };
+  const slider = (label: string, key: 'gain' | 'fadeIn' | 'fadeOut' | 'playbackRate', min: number, max: number, step: number, fmt: (v: number) => string) => (
+    <label className="field" style={{ width: 200 }}>{label} <span className="mono">{fmt(a[key])}</span>
+      <input type="range" min={min} max={max} step={step} value={a[key]} onPointerDown={() => st().beginGesture()} onPointerUp={() => st().endGesture(`Clip ${label}`)} onChange={(e) => edit({ [key]: Number(e.target.value) })} />
+    </label>
+  );
+  return (
+    <div className="editor-body scroll" style={{ padding: 12 }}>
+      <div className="row wrap" style={{ gap: 18, alignItems: 'flex-end' }}>
+        <b>{clip.name}</b>
+        {slider('Gain', 'gain', -24, 12, 0.1, (v) => `${v.toFixed(1)} dB`)}
+        {slider('Fade in', 'fadeIn', 0, 10, 0.01, (v) => `${v.toFixed(2)} s`)}
+        {slider('Fade out', 'fadeOut', 0, 10, 0.01, (v) => `${v.toFixed(2)} s`)}
+        {slider('Playback rate', 'playbackRate', 0.5, 2, 0.01, (v) => `${v.toFixed(2)}× (${(12 * Math.log2(v)).toFixed(1)} st)`)}
+        <label className="row"><input type="checkbox" checked={a.reverse} onChange={(e) => edit({ reverse: e.target.checked }, false)} />Reverse</label>
+      </div>
+      <div className="dim small" style={{ marginTop: 8 }}>Move, trim (edges), split (S / ✂), loop (Shift+drag right edge) and duplicate (Ctrl+drag) on the timeline. Playback rate changes pitch and speed together (no time-stretching); clip length on the timeline is not adjusted automatically.</div>
     </div>
   );
 }

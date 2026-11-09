@@ -9,8 +9,9 @@ const { chromium } = await import('playwright').catch(() => createRequire(import
 const URL = process.env.AIMS_URL || 'http://localhost:8787';
 const SHOTS = process.env.AIMS_SHOTS;
 const fail = (m) => { console.error('FAIL:', m); process.exitCode = 1; };
-const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required'] });
-const page = await browser.newPage({ viewport: { width: 1500, height: 920 }, deviceScaleFactor: SHOTS ? 2 : 1 });
+const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required', '--use-fake-device-for-media-stream', '--use-fake-ui-for-media-stream'] });
+const context = await browser.newContext({ permissions: ['microphone'], viewport: { width: 1500, height: 920 }, deviceScaleFactor: SHOTS ? 2 : 1 });
+const page = await context.newPage();
 const errors = [];
 page.on('pageerror', (e) => errors.push(String(e)));
 page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
@@ -72,6 +73,46 @@ await page.click('button.tab:has-text("Piano Roll")');
 await page.waitForTimeout(250);
 if (SHOTS) await page.screenshot({ path: `${SHOTS}/5-drums.png` });
 if (!(await page.$('text=step sequencer'))) fail('drum editor did not render'); else console.log('✓ drum step sequencer renders');
+// real export through the Export dialog: capture the downloaded WAV and check it
+await page.evaluate(() => window.aims.useStudio.getState().set({ selection: { from: 0, to: 24 } }));
+await page.click('button:has-text("Export")');
+await page.selectOption('label:has-text("Range") select', 'selection');
+const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 120000 }), page.click('button:has-text("Render & download")')]);
+const wavPath = await dl.path();
+const { readFileSync } = await import('node:fs');
+const buf = readFileSync(wavPath);
+const ch = buf.readUInt16LE(22), sr = buf.readUInt32LE(24), bits = buf.readUInt16LE(34);
+let peak = 0;
+for (let o = 44; o + 3 <= buf.length; o += 3 * 50) { let x = buf[o] | (buf[o + 1] << 8) | (buf[o + 2] << 16); if (x & 0x800000) x -= 0x1000000; peak = Math.max(peak, Math.abs(x) / 8388608); }
+const secs = (buf.length - 44) / (ch * sr * bits / 8);
+if (buf.toString('ascii', 0, 4) !== 'RIFF' || peak < 0.05 || secs < 5) fail(`exported WAV invalid: ${ch}ch ${sr}Hz ${bits}bit ${secs.toFixed(1)}s peak ${peak}`);
+else console.log(`✓ exported ${dl.suggestedFilename()}: ${ch}ch ${sr} Hz ${bits}-bit, ${secs.toFixed(1)} s, peak ${(20 * Math.log10(peak)).toFixed(1)} dBFS`);
+await page.selectOption('label:has-text("Format") select', 'mp3');
+const [mp3] = await Promise.all([page.waitForEvent('download', { timeout: 120000 }), page.click('button:has-text("Render & download")')]);
+const mp3buf = readFileSync(await mp3.path());
+const frameSync = mp3buf[0] === 0xff && (mp3buf[1] & 0xe0) === 0xe0;
+if (!frameSync || mp3buf.length < 50000) fail(`MP3 export invalid (${mp3buf.length} bytes)`); else console.log(`✓ exported ${mp3.suggestedFilename()} (${(mp3buf.length / 1024).toFixed(0)} KB, valid MPEG frames)`);
+const [mid] = await Promise.all([page.waitForEvent('download'), page.click('button:has-text("MIDI (.mid)")')]);
+const mbuf = readFileSync(await mid.path());
+if (mbuf.toString('ascii', 0, 4) !== 'MThd') fail('MIDI export invalid'); else console.log(`✓ exported ${mid.suggestedFilename()} (${mbuf.length} bytes)`);
+await page.keyboard.press('Escape');
+// microphone recording (Chromium fake device produces a test tone)
+const rec = await page.evaluate(async () => {
+  const { actions, useStudio, engine } = window.aims;
+  useStudio.getState().commit('count-in off', (p) => ({ ...p, metronome: { ...p.metronome, countInBars: 0 } }));
+  useStudio.getState().set({ cursorBeat: 4 });
+  await actions.toggleRecord();
+  await new Promise((r) => setTimeout(r, 2500));
+  await actions.toggleRecord();
+  const p = useStudio.getState().project;
+  const t = p.tracks.find((x) => x.type === 'audio' && x.clips.length);
+  const c = t?.clips[0];
+  const b = c?.audio && engine.assets.get(c.audio.assetId);
+  let peak = 0;
+  if (b) for (const v of b.getChannelData(0)) peak = Math.max(peak, Math.abs(v));
+  return { ok: !!b, start: c?.start, secs: b?.duration, peak };
+});
+if (!rec.ok || rec.secs < 1 || rec.peak < 0.001) fail('recording failed ' + JSON.stringify(rec)); else console.log(`✓ recorded ${rec.secs.toFixed(2)} s from the (fake) microphone at beat ${rec.start.toFixed(2)}, peak ${(20 * Math.log10(rec.peak)).toFixed(1)} dBFS`);
 // persistence
 const id = await page.evaluate(async () => { await new Promise((r) => setTimeout(r, 1600)); return window.aims.useStudio.getState().project.id; });
 await page.reload();
